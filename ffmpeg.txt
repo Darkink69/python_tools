@@ -1,0 +1,77 @@
+картинки в видео
+ffmpeg -framerate 10 -i 'img-%03d.jpeg' out.mkv
+ffmpeg -r 30 -y -i "result/frame_%03d.png" output.mp4
+
+захват экрана
+# грабит видеокарта
+# ffmpeg -f gdigrab -framerate 30 -i desktop -c:v h264_nvenc -qp 0 output.mkv
+#
+# ffmpeg - f gdigrab - rtbufsize 100 M - framerate 30 - probesize 10 M - draw_mouse 1 - i desktop - c: v libx264 - r 30 - preset ultrafast - tune zerolatency - crf 25 - pix_fmt yuv420p out.mp4
+
+# запись экрана со звуком
+# ffmpeg -f dshow -i audio="@device_cm_{33D9A762-90C8-11D0-BD43-00A0C911CE86}\wave_{A148FE0E-AF21-4217-899B-6FB4FDD0D616}" -f gdigrab -rtbufsize 100M -framerate 30 -probesize 10M -draw_mouse 1 -i desktop -acodec aac -c:v libx264 -r 30 -preset ultrafast -tune zerolatency -crf 25 -pix_fmt yuv420p out.mp4
+
+разбить на кадры
+f'ffmpeg -i {folder}/{file} {folder}/{file}/frame_%03d.png'
+
+соеденить несколько видео в одно
+ffmpeg -f concat -i files.txt -c copy output.mp4
+файл txt (слово file и кавычки обязательно):
+  file '/path/to/file1'
+  file '/path/to/file2'
+  file '/path/to/file3'
+
+Установить свой thumbnail на видео
+ffmpeg -i input.mp4 -i thumbnail.png -map 1 -map 0 -c copy -disposition:0 attached_pic output.mp4
+
+# ffmpeg -i 1.mp4 -vf select="gt(scene\,0.4)",scale=192:256,tile=5x50 -frames:v 1 -y 2.jpg
+
+#  ffmpeg -i 1.mp4 -vf select='eq(pict_type\,I)' -vsync 2 -f image2 out/keyframe-%02d.jpg
+#  ffmpeg -i 1.mp4 -ss 00:01:00 -to 00:02:00 -vf select='eq(pict_type\,I)' -vsync 2 -f image2 out/keyframe-%02d.png
+# ffprobe -v quiet -print_format json -show_format -show_streams 1.mp4 > 1.json
+
+
+# ffmpeg -i 2.mp4 -ss 00:00:10.000 -vframes 1 output2.png / сохраняем кадр с тысячными долями секунды (но очень долго, особенно по ссылке)
+# ffmpeg -i input.mkv -ss 00:00:00 -vframes 1 output.png
+
+Делает из видео картинку с тайлами
+# ffmpeg -i 1.mp4 -vf select='gt(scene\,0.2)',scale=200:120,tile=8x6 -frames:v 1 preview.png
+
+
+# к ссылке добавляем в секундах:   ?t=1430
+
+
+
+# process_call_str = 'ffmpeg -ss {1} -to {2} -i "{0}"'/
+#                             '-acodec aac -b:a 192k -avoid_negative_ts make_zero "{3}"'
+#                             .format(str(url), str(ss), str(t), download_file_path)
+
+# f'ffmpeg -ss {ss} -to {to} -i "{url}" -ss {ss} -to {to} -i "{aurl}" -acodec aac -b:a 192k -avoid_negative_ts make_zero -map 0:v:0 -map 1:a:0 out.mp4'
+
+# f'ffmpeg -ss {ss} -to {to} -i "{url}" -acodec aac -b:a 192k -avoid_negative_ts make_zero out.mp4'
+
+вырезать кусок
+# ffmpeg -i 1.mp4 -ss 00:01:00 -to 00:02:00 -c copy cut.mp4
+# ffmpeg -i "1.mp4" -t 15  -vf select="eq(pict_type\,PICT_TYPE_I)" -vsync 2  -s 160x90 -f image2 thumbnails-%02d.jpeg -loglevel debug 2>&1| for /f "tokens=4,8,9 delims=. " %d in ('findstr "pict_type:I"') do echo %d %e.%f>>"keyframe_list.txt"
+
+
+звук из видео только первую минуту
+# ffmpeg -ss 00:00:00 -t 00:01:00 -i 123.mp4 -f wav 1.wav
+
+соеденить звук и видео
+# ffmpeg -i 1.mp4 -i 1.wav -map 0:0 -map 1:0 -c:v copy output_good.mp4
+
+
+#  ffprobe -i 1.mp4 -select_streams v -show_frames -show_entries frame=pict_type -of csv > frame_index.txt
+# process_call_str = f'ffprobe - i 1.mp4 - select_streams v - show_frames - show_entries frame = pict_type - of csv | findstr "pict_type" | cut - d ":" - f 1 > frame_index.txt'
+# ffprobe -i 1.mp4 -show_frames !!!!!!
+# yt-dlp "ytsearch5:юрий никулин" --get-id --get-title --datebefore YYYYMMDD --dateafter DATE --date DATE
+
+# yt-dlp --format 'mp4' --list-formats  --skip-download https://youtu.be/ibbjk7-yvPI
+# --write-info-json
+
+скачать кусочек (сперва качает всё)
+yt-dlp https://youtu.be/uVcImG-C6K4 --postprocessor-args '-ss 00:45:00 -to 00:45:55 -c copy'    
+
+# убрать деинтерлейз
+ffmpeg -i 1.avi -vf yadif -c:v libx264 -preset slow -crf 19 -c:a aac -b:a 256k output.mp4
