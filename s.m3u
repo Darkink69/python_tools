@@ -1,3 +1,15 @@
 #EXTM3U
 #EXTINF:0,cliqhop
 https://ice6.somafm.com/cliqhop-256-mp3
+#EXTINF:0,salad classic
+https://ice2.somafm.com/gsclassic-128-mp3
+#EXTINF:0,groove salad
+https://ice2.somafm.com/groovesalad-256-mp3
+#EXTINF:0,salad2
+https://ice6.somafm.com/groovesalad2-256-mp3
+#EXTINF:0,spacestation
+https://ice2.somafm.com/spacestation-320-mp3
+#EXTINF:0,missioncontrol
+https://ice2.somafm.com/missioncontrol-128-mp3
+#EXTINF:0,secretagent
+https://ice6.somafm.com/secretagent-128-mp3
